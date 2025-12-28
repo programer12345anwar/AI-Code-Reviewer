@@ -1,4 +1,4 @@
-const API_BASE='http://localhost:9095/api/code';
+const API_BASE='http://localhost:9090/api/code';
 const USER_ID_KEY = 'ai_codereviewer_user_id';
 
 function getUserId(){
