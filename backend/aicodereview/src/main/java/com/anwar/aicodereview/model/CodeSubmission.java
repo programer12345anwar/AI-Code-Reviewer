@@ -22,7 +22,9 @@ public class CodeSubmission {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+    @Column(name = "file_name")
     private String fileName;
+
     private String language;
 
     @Column(columnDefinition = "TEXT")
@@ -30,4 +32,8 @@ public class CodeSubmission {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @PrePersist
+    protected void onCreate(){
+        createdAt = LocalDateTime.now();
+    }
 }

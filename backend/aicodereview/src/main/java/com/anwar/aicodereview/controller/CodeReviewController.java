@@ -14,13 +14,10 @@ public class CodeReviewController {
     @Autowired
     private CodeService codeService;
 
-    @GetMapping("/hello")
-    public String sayHello(){
-        return "welcome to the backend code";
-    }
-
     @PostMapping("/upload")
     public ResponseEntity<CodeSubmission> uploadCode(@RequestBody CodeSubmission codeSubmission){
+        System.out.println(codeSubmission);
+
         return ResponseEntity.ok(codeService.createSubmission(codeSubmission));
     }
 }

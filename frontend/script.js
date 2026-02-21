@@ -1,11 +1,12 @@
-const API_BASE='http://localhost:9090/api/code';
+const API_BASE='http://localhost:3535/api/code';
 const USER_ID_KEY = 'ai_codereviewer_user_id';
 
 function getUserId(){
-    const id = localStorage.getItem(USER_ID_KEY);
+    let id = localStorage.getItem(USER_ID_KEY);
+
     if(!id){
-        id= crypto.randomUUID();
-        localStorage.setItem(USER_ID_KEY,id);
+        id = crypto.randomUUID();
+        localStorage.setItem(USER_ID_KEY, id);
     }
 
     return id;
@@ -13,7 +14,8 @@ function getUserId(){
 
 const USER_ID = getUserId();
 
-async function submitCode(params) {
+async function submitCode() {
+
     const fileInput = document.getElementById('fileInput');
     const textArea = document.getElementById('codeArea');
     const analyzeBtn = document.getElementById('analyzeBtn');
@@ -21,7 +23,7 @@ async function submitCode(params) {
     let code = textArea.value;
     let fileName = 'pasted_code.txt';
 
-    if(fileInput && fileInput.files.length>0){
+    if(fileInput && fileInput.files.length > 0){
         const file = fileInput.files[0];
         code = await file.text();
         fileName = file.name;
@@ -35,38 +37,145 @@ async function submitCode(params) {
     analyzeBtn.disabled = true;
     analyzeBtn.innerText='Uploading...';
 
-    //call backend API
     try{
-        const reponse = await fetch(`${API_BASE}/upload`, {
+
+        const response = await fetch(`${API_BASE}/upload`, {
+
             method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
             body: JSON.stringify({
+
                 userId: USER_ID,
-                filename: filename,
-                language: detectLanguage(filename),
+
+                fileName: fileName,
+
+                language: detectLanguage(fileName),
+
                 code: code
+
             })
         });
 
-        if(Response.ok){
-            //do something
-        } else{
+        if(response.ok){
+
+            const result = await response.json();
+
+            console.log(result);
+
+            alert("Code uploaded successfully!");
+
+        }
+        else{
+
             alert('Upload failed!');
         }
-    } catch(e){
+
+    }
+    catch(e){
+
         console.error(e);
-        console.log("Error connection to server");
-    } finally{
-        analyzeBtn.disabled= false;
+
+        alert("Error connecting to server");
+
+    }
+    finally{
+
+        analyzeBtn.disabled = false;
+
         analyzeBtn.innerText='Analyze Code';
+
     }
 }
 
 function detectLanguage(filename){
+
+    filename = filename.toLowerCase();
+
     if(filename.endsWith('.js')) return 'javascript';
+
     if(filename.endsWith('.java')) return 'java';
+
     if(filename.endsWith('.py')) return 'python';
+
     if(filename.endsWith('.cpp')) return 'cpp';
 
     return 'text';
 }
+
+// const API_BASE='http://localhost:9090/api/code';
+// const API_BASE='http://localhost:3535/api/code';
+// const USER_ID_KEY = 'ai_codereviewer_user_id';
+
+// function getUserId(){
+//     const id = localStorage.getItem(USER_ID_KEY);
+//     if(!id){
+//         id= crypto.randomUUID();
+//         localStorage.setItem(USER_ID_KEY,id);
+//     }
+
+//     return id;
+// }
+
+// const USER_ID = getUserId();
+
+// async function submitCode(params) {
+//     const fileInput = document.getElementById('fileInput');
+//     const textArea = document.getElementById('codeArea');
+//     const analyzeBtn = document.getElementById('analyzeBtn');
+
+//     let code = textArea.value;
+//     let fileName = 'pasted_code.txt';
+
+//     if(fileInput && fileInput.files.length>0){
+//         const file = fileInput.files[0];
+//         code = await file.text();
+//         fileName = file.name;
+//     }
+
+//     if(!code.trim()){
+//         alert("Please enter code or upload a file!");
+//         return;
+//     }
+
+//     analyzeBtn.disabled = true;
+//     analyzeBtn.innerText='Uploading...';
+
+//     //call backend API
+//     try{
+//         const reponse = await fetch(`${API_BASE}/upload`, {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json'},
+//             body: JSON.stringify({
+//                 userId: USER_ID,
+//                 filename: filename,
+//                 language: detectLanguage(filename),
+//                 code: code
+//             })
+//         });
+
+//         if(Response.ok){
+//             //do something
+//         } else{
+//             alert('Upload failed!');
+//         }
+//     } catch(e){
+//         console.error(e);
+//         console.log("Error connection to server");
+//     } finally{
+//         analyzeBtn.disabled= false;
+//         analyzeBtn.innerText='Analyze Code';
+//     }
+// }
+
+// function detectLanguage(filename){
+//     if(filename.endsWith('.js')) return 'javascript';
+//     if(filename.endsWith('.java')) return 'java';
+//     if(filename.endsWith('.py')) return 'python';
+//     if(filename.endsWith('.cpp')) return 'cpp';
+
+//     return 'text';
+// }
